@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Beehome — Find your home</title>
+<style>
+  :root{
+    --ink:#0f1b2d;
+    --amber:#f7b32b;
+    --amber-dark:#d99a1f;
+    --bg:#ffffff;
+    --panel:#f4f6f9;
+    --muted:#6b7688;
+    --line:#e7eaef;
+    --radius:20px;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+  a, button, [role="button"], .tabs span, .filter-tabs span, .heart, .dots button {
+    touch-action: manipulation;
+  }
+  body{
+    margin:0;
+    font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  @media(min-width:1440px){.wrap{max-width:1320px;}}
+
+  /* NAV */
+  header {
+    padding: 24px 0;
+    padding-left: max(32px, env(safe-area-inset-left));
+    padding-right: max(32px, env(safe-area-inset-right));
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;}
+  .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:20px;}
+  .logo .dot{width:28px;height:28px;background:var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .navlinks{display:flex;gap:28px;font-size:14px;font-weight:500;color:var(--ink);}
+  .navright{display:flex;align-items:center;gap:20px;font-size:14px;font-weight:500;}
+  .btn-primary{background:var(--amber);color:var(--ink);padding:12px 22px;border-radius:30px;font-weight:600;font-size:14px;}
+
+  /* HERO */
+  .hero{text-align:center;padding:40px 0 30px;}
+  .hero h1{
+    font-size:96px;
+    line-height:0.95;
+    margin:0;
+    font-weight:900;
+    letter-spacing:-4px;
+  }
+  .tabs{display:inline-flex;background:var(--panel);border-radius:30px;padding:6px;margin:36px 0 18px;gap:4px;}
+  .tabs span{padding:9px 18px;border-radius:24px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;}
+  .tabs span.active{background:var(--ink);color:#fff;}
+  .searchbar{
+    max-width:560px;margin:0 auto;background:var(--panel);border-radius:40px;
+    display:flex;align-items:center;padding:8px;
+  }
+  .searchbar input{
+    flex:1;border:none;background:transparent;padding:13px 18px;font-size:16px;color:var(--ink);outline:none;
+  }
+  .searchbar input::placeholder{color:#9aa3b2;}
+  .searchbar button{
+    background:var(--ink);color:#fff;border:none;border-radius:30px;padding:14px 22px;
+    font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;cursor:pointer;
+  }
+
+  /* HERO IMAGE */
+  .hero-image{
+    margin-top:34px;border-radius:32px;overflow:hidden;height:420px;position:relative;
+    background:linear-gradient(135deg,#8b95a3,#6b7482);
+  }
+  .hero-image img{width:100%;height:100%;object-fit:cover;}
+  .custom-cursor {
+    position: absolute;
+    top: 35%;
+    left: 65%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ink);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(15,27,45,0.25);
+    pointer-events: none;
+    animation: floatCursor 4s ease-in-out infinite;
+  }
+  .custom-cursor svg {
+    color: var(--amber);
+    fill: var(--amber);
+    transform: rotate(-15deg);
+  }
+  @keyframes floatCursor {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-6px) translateX(4px); }
+  }
+
+  /* TRUSTPILOT STRIP */
+  .trust{
+    display:flex;align-items:center;justify-content:space-between;padding:36px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .trust-left{display:flex;flex-direction:column;gap:4px;min-width:160px;}
+  .trust-brand{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;}
+  .stars{color:var(--amber);font-size:14px;letter-spacing:2px;}
+  .trust-sub{font-size:12px;color:var(--muted);}
+  .trust-quote{flex:1;text-align:center;font-size:17px;font-weight:500;max-width:520px;margin:0 auto;}
+  .trust-quote span{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:10px;}
+  .trust-arrow{width:44px;height:44px;border-radius:50%;background:var(--panel);display:flex;align-items:center;justify-content:center;}
+
+  /* SECTION HEADS */
+  .section{padding:48px 0;}
+  .section-how, .section-testimonial, .section-cta {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;}
+  .section-head h2{font-size:30px;margin:0 0 6px;font-weight:700;}
+  .section-head p{margin:0;color:var(--muted);font-size:14px;}
+  .view-all{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;}
+
+  .filter-tabs{display:flex;gap:10px;margin-bottom:24px;}
+  .filter-tabs span{padding:10px 22px;border-radius:24px;font-size:13px;font-weight:600;background:var(--panel);color:var(--muted);cursor:pointer;}
+  .filter-tabs span.active{background:var(--ink);color:#fff;}
+
+  /* LISTING CARDS */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;}
+  .card-img{height:210px;position:relative;background:#d9dde3;}
+  .card-img img{width:100%;height:100%;object-fit:cover;}
+  .badge{position:absolute;top:12px;left:12px;background:#0f1b2d;color:#fff;font-size:11px;font-weight:700;padding:6px 12px;border-radius:16px;}
+  .heart{position:absolute;top:12px;right:12px;width:32px;height:32px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;}
+  .card-body{padding:18px 20px 22px;}
+  .price-row{display:flex;justify-content:space-between;align-items:center;}
+  .price{font-size:19px;font-weight:700;}
+  .price .old{font-size:13px;color:var(--muted);font-weight:400;text-decoration:line-through;margin-left:6px;}
+  .fav{color:var(--muted);}
+  .card-type{font-size:14px;font-weight:600;margin:10px 0 2px;}
+  .card-addr{font-size:12px;color:var(--muted);margin-bottom:14px;}
+  .card-meta{display:flex;gap:14px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;}
+  .card-meta span{display:inline-flex;align-items:center;gap:4px;}
+  /* HOW TO SELL */
+  .how{background:var(--panel);border-radius:32px;padding:64px 56px;text-align:center;margin-top:16px;margin-bottom:16px;}
+  .how h2{font-size:32px;font-weight:700;margin:0 0 40px;line-height:1.2;}
+  .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;text-align:left;}
+  .how-card{background:#fff;border-radius:20px;padding:22px;}
+  .how-card p{font-size:14px;font-weight:600;margin:0 0 18px;line-height:1.4;}
+  .how-card .imgbox{height:160px;border-radius:16px;overflow:hidden;background:#c9ccd4;}
+  .how-card .imgbox img{width:100%;height:100%;object-fit:cover;}
+
+  /* CATEGORY */
+  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .cat-card{
+    display:flex;align-items:center;gap:16px;background:var(--panel);border-radius:20px;padding:20px;
+  }
+  .cat-card .imgbox{width:72px;height:72px;border-radius:14px;overflow:hidden;flex-shrink:0;background:#ccc;}
+  .cat-card .imgbox img{width:100%;height:100%;object-fit:cover;}
+  .cat-card:nth-child(2) .imgbox{position:relative;}
+  .cat-card:nth-child(2) .imgbox::after{
+    content:"";position:absolute;inset:0;background:rgba(20,184,166,0.15);
+  }
+  .cat-card:nth-child(3) .imgbox img{filter:saturate(1.3) contrast(1.05);}
+  .cat-card h3{margin:0 0 4px;font-size:16px;font-weight:700;}
+  .cat-card p{margin:0;font-size:13px;color:var(--muted);}
+
+  /* STATS */
+  .stats{text-align:center;padding:40px 0;}
+  .stats h2{font-size:28px;font-weight:700;margin-bottom:36px;}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .stat-num{font-size:36px;font-weight:800;color:var(--amber-dark);}
+  .stat-label{font-size:13px;color:var(--muted);margin-top:6px;}
+
+  /* TESTIMONIAL */
+  .testimonial{background:var(--panel);border-radius:32px;padding:60px 80px;text-align:center;margin-top:16px;margin-bottom:16px;}
+  .testimonial p.quote{font-size:19px;line-height:1.6;font-weight:500;max-width:720px;margin:0 auto 26px;}
+  .testimonial .name{font-weight:700;font-size:14px;}
+  .testimonial .loc{font-size:12px;color:var(--muted);margin-top:2px;}
+  .dots{display:flex;justify-content:center;gap:12px;margin-top:26px;}
+  .dots button{
+    width:38px;height:38px;border-radius:50%;background:var(--ink);color:#fff;border:none;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s ease;
+  }
+  .dots button:hover{opacity:0.9;transform:scale(1.05);}
+  .dots button:first-child{background:var(--amber);color:var(--ink);}
+
+  /* CTA CARDS */
+  .cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .cta-card{
+    background:var(--panel);border-radius:24px;padding:34px;display:flex;justify-content:space-between;align-items:flex-end;overflow:hidden;position:relative;min-height:180px;
+  }
+  .cta-card .eyebrow{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+  .cta-card h3{font-size:20px;font-weight:700;margin:10px 0 14px;max-width:220px;line-height:1.3;}
+  .cta-card .link{font-size:13px;font-weight:700;}
+  .cta-card .art{position:absolute;right:0;bottom:0;width:160px;height:190px;overflow:hidden;background:#ccc;}
+  .cta-card .art img{width:100%;height:100%;object-fit:cover;}
+
+  /* FOOTER */
+  footer{
+    background-color:var(--panel);
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:20px 20px;
+    border-radius:32px 32px 0 0;
+    padding:60px 0 30px;
+    padding-left: max(32px, env(safe-area-inset-left));
+    padding-right: max(32px, env(safe-area-inset-right));
+    margin-top:40px;
+  }
+  .footer-top{display:grid;grid-template-columns:1.8fr 1.2fr 1fr 1fr 1fr;gap:30px;}
+  .footer-logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px;margin-bottom:16px;}
+  .footer-logo .dot{width:24px;height:24px;background:var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .socials{display:flex;gap:10px;margin-top:20px;}
+  .socials span{
+    width:34px;height:34px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:var(--ink);cursor:pointer;transition:all 0.2s ease;
+  }
+  .socials span:hover{
+    background:var(--amber);
+  }
+  .footer-col h4{font-size:13px;font-weight:700;margin-bottom:16px;}
+  .footer-col a{display:block;font-size:13px;color:var(--muted);margin-bottom:12px;}
+  .footer-bottom{display:flex;justify-content:space-between;padding-top:30px;margin-top:30px;border-top:1px solid #e2e5eb;font-size:12px;color:var(--muted);}
+
+  /* HAMBURGER BTN */
+  .hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 1001;
+  }
+  .hamburger-btn span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--ink);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  /* DRAWER SYSTEM */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 27, 45, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 2000;
+    backdrop-filter: blur(1px);
+  }
+  .drawer-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .drawer-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 78vw;
+    max-width: 320px;
+    background: #fff;
+    box-shadow: -10px 0 30px rgba(15, 27, 45, 0.15);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 2001;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .drawer-panel.active {
+    transform: translateX(0);
+  }
+  .drawer-close {
+    align-self: flex-end;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--ink);
+    cursor: pointer;
+    margin-bottom: 24px;
+  }
+  .drawer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .drawer-link {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .drawer-divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 10px 0;
+  }
+
+  /* REUSABLE MODAL SYSTEM */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 27, 45, 0.5);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 3000;
+  }
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .modal-panel {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    background: #fff;
+    border-radius: 24px;
+    padding: 32px;
+    max-height: 85vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 20px 50px rgba(15, 27, 45, 0.15);
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .modal-overlay.active .modal-panel {
+    transform: scale(1);
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--ink);
+    cursor: pointer;
+    z-index: 10;
+  }
+  
+  /* TOAST SYSTEM */
+  .toast-container {
+    position: fixed;
+    z-index: 4000;
+    pointer-events: none;
+  }
+  @media(min-width: 901px) {
+    .toast-container {
+      bottom: 24px;
+      right: 24px;
+    }
+  }
+  @media(max-width: 900px) {
+    .toast-container {
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 90vw;
+    }
+  }
+  .toast-pill {
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 22px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(15, 27, 45, 0.2);
+    margin-top: 10px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    pointer-events: auto;
+  }
+  .toast-pill.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .toast-pill.fade-out {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+
+  /* CARDS POLISH */
+  .heart {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+  .heart:hover {
+    transform: scale(1.1);
+  }
+  .heart.favorited svg {
+    fill: #e0453c;
+    stroke: #e0453c;
+  }
+
+  @media(max-width:1024px){
+    .wrap{padding:0 24px}
+    .grid-3, .how-grid{grid-template-columns:repeat(2,1fr)}
+    .cat-grid{grid-template-columns:1fr}
+    .custom-cursor{display:none;}
+    .hero-image{height:320px;}
+    .footer-top{grid-template-columns:1.4fr 1fr 1fr;gap:24px;}
+    .footer-top > div:nth-child(1) { grid-column: 1; grid-row: 1; }
+    .footer-top > div:nth-child(2) { grid-column: 1; grid-row: 2; }
+    .footer-top > div:nth-child(3) { grid-column: 2; grid-row: 1; }
+    .footer-top > div:nth-child(4) { grid-column: 3; grid-row: 1; }
+    .footer-top > div:nth-child(5) { grid-column: 2 / span 2; grid-row: 2; }
+  }
+
+  @media(max-width:768px){
+    .hero h1{font-size:72px; letter-spacing:-3px}
+    .hero-image{height:280px;}
+    .stat-grid{grid-template-columns:repeat(2,1fr)}
+    .trust{flex-direction:column; gap:20px; text-align:center}
+    .navlinks{display:none}
+    .hamburger-btn { display: flex; }
+    .navright a { display: none; }
+    .testimonial{padding:44px 32px}
+    .how{padding:44px 28px}
+  }
+
+  @media(max-width:480px){
+    .wrap{padding:0 20px}
+    .hero h1{font-size:44px; letter-spacing:-1.5px}
+    .hero-image{height:220px;}
+    .tabs{flex-wrap:wrap; max-width:280px}
+    .searchbar{flex-direction:column; border-radius:20px; padding:12px}
+    .searchbar input{width:100%; text-align:center; padding:10px}
+    .searchbar button{width:100%; justify-content:center; margin-top:8px}
+    .grid-3, .how-grid{grid-template-columns:1fr}
+    .section-head{flex-direction:column; align-items:flex-start; gap:8px}
+    .cta-card{flex-direction:column; align-items:flex-start; min-height:auto; padding:24px}
+    .cta-card .art{position:relative; right:auto; bottom:auto; width:100%; height:140px; margin-top:16px; border-radius:16px}
+    .footer-top{grid-template-columns:1fr}
+    .footer-top > div { grid-column: auto !important; grid-row: auto !important; }
+  }
+
+  @media(max-width:380px){
+    .hero h1{font-size:36px}
+    .stat-num{font-size:28px}
+    .card-meta{flex-wrap:wrap; gap:10px}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav">
+      <div class="logo">
+        <span class="dot">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f1b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Body -->
+            <path d="M 12 7 a 5 6 0 1 0 0 12 a 5 6 0 1 0 0 -12" stroke-width="1.8" />
+            <!-- Stripes -->
+            <path d="M 7.5 11 h 9" stroke-width="1.8" />
+            <path d="M 7.5 15 h 9" stroke-width="1.8" />
+            <!-- Wings -->
+            <path d="M 12 7.5 a 2.5 4 0 1 0 -4 0 a 2.5 4 0 1 0 4 0" transform="rotate(-15 10 7.5)" stroke-width="1.8" />
+            <path d="M 16 7.5 a 2.5 4 0 1 0 -4 0 a 2.5 4 0 1 0 4 0" transform="rotate(15 14 7.5)" stroke-width="1.8" />
+            <!-- Antennae -->
+            <path d="M 10.5 7.5 Q 9.5 4.5 7.5 4.5" stroke-width="1.8" />
+            <path d="M 13.5 7.5 Q 14.5 4.5 16.5 4.5" stroke-width="1.8" />
+            <!-- Antenna Dots -->
+            <path d="M 7.5 3.5 a 1 1 0 1 0 0 2 a 1 1 0 1 0 0 -2 Z" fill="#0f1b2d" stroke="none" />
+            <path d="M 16.5 3.5 a 1 1 0 1 0 0 2 a 1 1 0 1 0 0 -2 Z" fill="#0f1b2d" stroke="none" />
+          </svg>
+        </span>
+        Beehome
+      </div>
+      <div class="navlinks">
+        <a href="#" class="nav-link-item" data-type="sell">Sell</a>
+        <a href="#" class="nav-link-item" data-type="buy">Buy</a>
+        <a href="#" class="nav-link-item" data-type="rent">Rent</a>
+        <a href="#" class="nav-link-item" data-type="find-agent">Find agent</a>
+        <a href="#" class="nav-link-item" data-type="manage-rentals">Manage rentals</a>
+        <a href="#" class="nav-link-item" data-type="advertise">Advertise</a>
+      </div>
+      <div class="navright">
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <a href="#" class="login-trigger">Login</a>
+        <a href="#" class="btn-primary list-property-trigger">List Your Property</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Find your home</h1>
+    <div class="tabs">
+      <span class="active">Buy</span><span>Rent</span><span>Sell</span><span>Home Value</span>
+    </div>
+    <div class="searchbar">
+      <input type="text" placeholder="Search Address, City, Postcode, Agent">
+      <button>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+        </svg>
+        Find out
+      </button>
+    </div>
+
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=80" alt="Modern house">
+      <div class="custom-cursor">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+        </svg>
+        <span>Explore</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust">
+    <div class="trust-left">
+      <div class="trust-brand">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--amber);margin-right:2px;display:inline-block;vertical-align:-1px;">
+          <polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/>
+        </svg>Trustpilot
+      </div>
+      <div class="stars" style="display:flex;gap:4px;color:var(--amber);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+      </div>
+      <div class="trust-sub">Excellent, 13,000+ reviews</div>
+    </div>
+    <div class="trust-quote">
+      "Beehome is just amazing, selling a house has never been easier like beehome."
+      <span>Arthur J.</span>
+    </div>
+    <div class="trust-arrow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </div>
+  </div>
+
+  <section class="section" id="popularListings">
+    <div class="section-head">
+      <div>
+        <h2>Popular listings</h2>
+        <p>Beehome's most popular watchlists.</p>
+      </div>
+      <a href="#" class="view-all">View all 2,412 listings →</a>
+    </div>
+    <div class="filter-tabs">
+      <span class="active">House</span><span>Apartment</span><span>Villa</span>
+    </div>
+    <div class="grid-3">
+      <div class="card" data-type="house">
+        <div class="card-img">
+          <span class="badge">Special Offers</span>
+          <span class="heart">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+          </span>
+          <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=500&q=80" alt="House">
+        </div>
+        <div class="card-body">
+          <div class="price-row">
+            <div class="price">$549,000<span class="old">$599,000</span></div>
+            <span class="fav"></span>
+          </div>
+          <div class="card-type">House</div>
+          <div class="card-addr">54 School Street UNIT 21H, Westbury, NY 11590</div>
+          <div class="card-meta">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 14h20M6 8v4"/>
+              </svg>
+              4 bds
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 22h20M7 18v3M17 18v3M3 14h18c.6 0 1-.4 1-1V9c0-2.8-2.2-5-5-5h-6c-2.8 0-5 2.2-5 5v4c0 .6.4 1 1 1zM14 4V2"/>
+              </svg>
+              3 Ba
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 15v6h-6M3 9V3h6"/>
+              </svg>
+              1,209 sqft
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-type="apartment">
+        <div class="card-img">
+          <span class="badge">Featured</span>
+          <span class="heart">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#e0453c" stroke="#e0453c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+          </span>
+          <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500&q=80" alt="House">
+        </div>
+        <div class="card-body">
+          <div class="price-row"><div class="price">$354,809</div></div>
+          <div class="card-type">Apartment</div>
+          <div class="card-addr">54 School Street UNIT 21H, Westbury, NY 11590</div>
+          <div class="card-meta">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 14h20M6 8v4"/>
+              </svg>
+              3 bds
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 22h20M7 18v3M17 18v3M3 14h18c.6 0 1-.4 1-1V9c0-2.8-2.2-5-5-5h-6c-2.8 0-5 2.2-5 5v4c0 .6.4 1 1 1zM14 4V2"/>
+              </svg>
+              2 Ba
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 15v6h-6M3 9V3h6"/>
+              </svg>
+              700 sqft
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-type="villa">
+        <div class="card-img">
+          <span class="heart">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+          </span>
+          <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=500&q=80" alt="Interior">
+        </div>
+        <div class="card-body">
+          <div class="price-row"><div class="price">$199,900</div></div>
+          <div class="card-type">Villa</div>
+          <div class="card-addr">54 School Street UNIT 21H, Westbury, NY 11590</div>
+          <div class="card-meta">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 14h20M6 8v4"/>
+              </svg>
+              4 bed
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 22h20M7 18v3M17 18v3M3 14h18c.6 0 1-.4 1-1V9c0-2.8-2.2-5-5-5h-6c-2.8 0-5 2.2-5 5v4c0 .6.4 1 1 1zM14 4V2"/>
+              </svg>
+              3 Bath
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 15v6h-6M3 9V3h6"/>
+              </svg>
+              1,209 sqft
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-how">
+    <div class="how">
+      <h2>How to sell your home in<br>Beehome in easiest way</h2>
+      <div class="how-grid">
+        <div class="how-card">
+          <p>We estimate your home and help you prepare to sell it.</p>
+          <div class="imgbox"><img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=500&q=80" alt="Estimate"></div>
+        </div>
+        <div class="how-card">
+          <p>Find the best price that works for you</p>
+          <div class="imgbox"><img src="https://images.unsplash.com/photo-1560520031-3a4dc4e9de0c?w=500&q=80" alt="Price"></div>
+        </div>
+        <div class="how-card">
+          <p>We take care of the sale from start to finish.</p>
+          <div class="imgbox"><img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500&q=80" alt="Sale"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Listing category</h2>
+        <p>Type of our property</p>
+      </div>
+      <a href="#" class="view-all">View all 2,412 listings →</a>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card">
+        <div class="imgbox"><img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=200&q=80" alt="House"></div>
+        <div><h3>House</h3><p>1,068 listings</p></div>
+      </div>
+      <div class="cat-card">
+        <div class="imgbox"><img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=200&q=80" alt="Apartment"></div>
+        <div><h3>Apartment</h3><p>312 listings</p></div>
+      </div>
+      <div class="cat-card">
+        <div class="imgbox"><img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=200&q=80" alt="Villa"></div>
+        <div><h3>Villa</h3><p>742 listings</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Latest listings</h2>
+        <p>Beehome's most popular watchlists.</p>
+      </div>
+      <a href="#" class="view-all">View all 2,412 listings →</a>
+    </div>
+    <div class="grid-3">
+      <div class="card" data-type="apartment">
+        <div class="card-img">
+          <span class="heart">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+          </span>
+          <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=500&q=80" alt="Apartment">
+        </div>
+        <div class="card-body">
+          <div class="price-row"><div class="price">$99,000</div></div>
+          <div class="card-type">Apartment</div>
+          <div class="card-addr">54 School Street UNIT 21H, Westbury, NY 11590</div>
+          <div class="card-meta">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 14h20M6 8v4"/>
+              </svg>
+              4 bds
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 22h20M7 18v3M17 18v3M3 14h18c.6 0 1-.4 1-1V9c0-2.8-2.2-5-5-5h-6c-2.8 0-5 2.2-5 5v4c0 .6.4 1 1 1zM14 4V2"/>
+              </svg>
+              3 Ba
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 15v6h-6M3 9V3h6"/>
+              </svg>
+              1,209 sqft
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-type="apartment">
+        <div class="card-img">
+          <span class="heart">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+          </span>
+          <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=500&q=80" alt="Apartment">
+        </div>
+        <div class="card-body">
+          <div class="price-row"><div class="price">$237,839</div></div>
+          <div class="card-type">Apartment</div>
+          <div class="card-addr">54 School Street UNIT 21H, Westbury, NY 11590</div>
+          <div class="card-meta">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 14h20M6 8v4"/>
+              </svg>
+              3 bds
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 22h20M7 18v3M17 18v3M3 14h18c.6 0 1-.4 1-1V9c0-2.8-2.2-5-5-5h-6c-2.8 0-5 2.2-5 5v4c0 .6.4 1 1 1zM14 4V2"/>
+              </svg>
+              2 Ba
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 15v6h-6M3 9V3h6"/>
+              </svg>
+              700 sqft
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-type="apartment">
+        <div class="card-img">
+          <span class="heart">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+          </span>
+          <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&q=80" alt="Apartment">
+        </div>
+        <div class="card-body">
+          <div class="price-row"><div class="price">$757,894</div></div>
+          <div class="card-type">Apartment</div>
+          <div class="card-addr">54 School Street UNIT 21H, Westbury, NY 11590</div>
+          <div class="card-meta">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 14h20M6 8v4"/>
+              </svg>
+              4 bed
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 22h20M7 18v3M17 18v3M3 14h18c.6 0 1-.4 1-1V9c0-2.8-2.2-5-5-5h-6c-2.8 0-5 2.2-5 5v4c0 .6.4 1 1 1zM14 4V2"/>
+              </svg>
+              3 Bath
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 15v6h-6M3 9V3h6"/>
+              </svg>
+              1,209 sqft
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats">
+    <h2>What's happening in Beehome</h2>
+    <div class="stat-grid">
+      <div><div class="stat-num">500M+</div><div class="stat-label">In property sales</div></div>
+      <div><div class="stat-num">43,652</div><div class="stat-label">Homes for sale</div></div>
+      <div><div class="stat-num">12,579</div><div class="stat-label">Recently sold</div></div>
+      <div><div class="stat-num">5,892</div><div class="stat-label">Home for rent</div></div>
+    </div>
+  </section>
+
+  <section class="section section-testimonial">
+    <div class="testimonial">
+      <p class="quote">The site is good, helpful in providing information to find a house, especially for me who likes to search for information via cellphone, good luck for Beehome and continue to help for housing seekers like me.</p>
+      <div class="name">Pamela S.</div>
+      <div class="loc">Lake Forest, CA</div>
+      <div class="dots">
+        <button aria-label="Previous testimonial">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button aria-label="Next testimonial">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-cta">
+    <div class="section-head" style="justify-content:center;text-align:center;flex-direction:column;align-items:center;">
+      <h2>Find the best home with us</h2>
+    </div>
+    <div class="cta-grid">
+      <div class="cta-card">
+        <div>
+          <div class="eyebrow">Consultation</div>
+          <h3>We are ready to help, consult your property options with us.</h3>
+          <a href="#" class="link consultation-trigger">Start chat →</a>
+        </div>
+        <div class="art"><img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=300&q=80" alt="Consultation"></div>
+      </div>
+      <div class="cta-card">
+        <div>
+          <div class="eyebrow">Calculator</div>
+          <h3>Find the best price for you, calculate your property now.</h3>
+          <a href="#" class="link calculator-trigger">Calculate →</a>
+        </div>
+        <div class="art">
+          <svg width="160" height="190" viewBox="0 0 160 190" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:100%;">
+            <!-- Background subtle gradient/circle -->
+            <circle cx="90" cy="100" r="70" fill="#e8f5e9" opacity="0.6"/>
+            <circle cx="110" cy="120" r="50" fill="#e0f2f1" opacity="0.8"/>
+            
+            <!-- Ruler/Set-square (Green/Teal tone) -->
+            <g transform="translate(20, 40) rotate(-15)">
+              <path d="M10 110 L10 10 L110 110 Z" fill="#00897b" opacity="0.9"/>
+              <path d="M25 95 L25 40 L80 95 Z" fill="#e0f2f1"/>
+              <line x1="15" y1="20" x2="22" y2="20" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="15" y1="35" x2="22" y2="35" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="15" y1="50" x2="22" y2="50" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="15" y1="65" x2="22" y2="65" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="15" y1="80" x2="22" y2="80" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="15" y1="95" x2="22" y2="95" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="30" y1="105" x2="30" y2="98" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="45" y1="105" x2="45" y2="98" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="60" y1="105" x2="60" y2="98" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="75" y1="105" x2="75" y2="98" stroke="#e0f2f1" stroke-width="1.5"/>
+              <line x1="90" y1="105" x2="90" y2="98" stroke="#e0f2f1" stroke-width="1.5"/>
+            </g>
+
+            <!-- Calculator (Teal/Dark Slate tone) -->
+            <g transform="translate(60, 60)">
+              <rect x="4" y="4" width="76" height="106" rx="10" fill="#004d40" opacity="0.2"/>
+              <rect width="76" height="106" rx="10" fill="#0f1b2d"/>
+              <rect x="8" y="8" width="60" height="22" rx="4" fill="#a7f3d0"/>
+              <rect x="14" y="15" width="28" height="8" rx="1" fill="#047857" opacity="0.8"/>
+              <rect x="46" y="15" width="16" height="8" rx="1" fill="#047857" opacity="0.8"/>
+              <rect x="8" y="38" width="12" height="12" rx="3" fill="#00b4d8"/>
+              <rect x="24" y="38" width="12" height="12" rx="3" fill="#2d3748"/>
+              <rect x="40" y="38" width="12" height="12" rx="3" fill="#2d3748"/>
+              <rect x="56" y="38" width="12" height="12" rx="3" fill="#00897b"/>
+              <rect x="8" y="54" width="12" height="12" rx="3" fill="#4a5568"/>
+              <rect x="24" y="54" width="12" height="12" rx="3" fill="#4a5568"/>
+              <rect x="40" y="54" width="12" height="12" rx="3" fill="#4a5568"/>
+              <rect x="56" y="54" width="12" height="12" rx="3" fill="#00897b"/>
+              <rect x="8" y="70" width="12" height="12" rx="3" fill="#4a5568"/>
+              <rect x="24" y="70" width="12" height="12" rx="3" fill="#4a5568"/>
+              <rect x="40" y="70" width="12" height="12" rx="3" fill="#4a5568"/>
+              <rect x="56" y="70" width="12" height="12" rx="3" fill="#00897b"/>
+              <rect x="8" y="86" width="12" height="12" rx="3" fill="#4a5568"/>
+              <rect x="24" y="86" width="12" height="12" rx="3" fill="#4a5568"/>
+              <rect x="40" y="86" width="28" height="12" rx="3" fill="#f7b32b"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">
+          <span class="dot">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0f1b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- Body -->
+              <path d="M 12 7 a 5 6 0 1 0 0 12 a 5 6 0 1 0 0 -12" stroke-width="1.8" />
+              <!-- Stripes -->
+              <path d="M 7.5 11 h 9" stroke-width="1.8" />
+              <path d="M 7.5 15 h 9" stroke-width="1.8" />
+              <!-- Wings -->
+              <path d="M 12 7.5 a 2.5 4 0 1 0 -4 0 a 2.5 4 0 1 0 4 0" transform="rotate(-15 10 7.5)" stroke-width="1.8" />
+              <path d="M 16 7.5 a 2.5 4 0 1 0 -4 0 a 2.5 4 0 1 0 4 0" transform="rotate(15 14 7.5)" stroke-width="1.8" />
+              <!-- Antennae -->
+              <path d="M 10.5 7.5 Q 9.5 4.5 7.5 4.5" stroke-width="1.8" />
+              <path d="M 13.5 7.5 Q 14.5 4.5 16.5 4.5" stroke-width="1.8" />
+              <!-- Antenna Dots -->
+              <path d="M 7.5 3.5 a 1 1 0 1 0 0 2 a 1 1 0 1 0 0 -2 Z" fill="#0f1b2d" stroke="none" />
+              <path d="M 16.5 3.5 a 1 1 0 1 0 0 2 a 1 1 0 1 0 0 -2 Z" fill="#0f1b2d" stroke="none" />
+            </svg>
+          </span>
+          Beehome
+        </div>
+        <p style="font-size:13px;color:var(--muted);max-width:220px;">Making it easier to find, buy, sell, and rent your next home.</p>
+        <div class="socials">
+          <span aria-label="Facebook">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+            </svg>
+          </span>
+          <span aria-label="Twitter">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+            </svg>
+          </span>
+          <span aria-label="Instagram">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+          </span>
+          <span aria-label="LinkedIn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+              <rect x="2" y="9" width="4" height="12"/>
+              <circle cx="4" cy="4" r="2"/>
+            </svg>
+          </span>
+          <span aria-label="YouTube">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+              <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="footer-col" id="footerContacts">
+        <h4>Contacts us</h4>
+        <p style="font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+          contact@behome.com
+        </p>
+        <p style="font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          (414) 687 - 5892
+        </p>
+        <p style="font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          784 Mcallister St, San Francisco, 94102
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#">Sell</a><a href="#">Buy</a><a href="#">Advertise</a><a href="#">Our agent</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About</a><a href="#">Contact us</a>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <a href="#">Getting started</a><a href="#">Help center</a><a href="#">Server status</a><a href="#">Report a bug</a><a href="#">Chat support</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Copyright © 2022 Beehome</span>
+      <span>All Rights Reserved | Terms and Conditions | Privacy Policy</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Drawer System -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer-panel" id="drawerPanel">
+  <button class="drawer-close" id="drawerClose" aria-label="Close Menu">&times;</button>
+  <nav class="drawer-nav">
+    <a href="#" class="drawer-link nav-link-item" data-type="sell">Sell</a>
+    <a href="#" class="drawer-link nav-link-item" data-type="buy">Buy</a>
+    <a href="#" class="drawer-link nav-link-item" data-type="rent">Rent</a>
+    <a href="#" class="drawer-link nav-link-item" data-type="find-agent">Find agent</a>
+    <a href="#" class="drawer-link nav-link-item" data-type="manage-rentals">Manage rentals</a>
+    <a href="#" class="drawer-link nav-link-item" data-type="advertise">Advertise</a>
+    <hr class="drawer-divider">
+    <a href="#" class="drawer-link login-trigger">Login</a>
+    <a href="#" class="btn-primary list-property-trigger" style="text-align:center;">List Your Property</a>
+  </nav>
+</div>
+
+<!-- Reusable Modal System -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-panel" id="modalPanel">
+    <button class="modal-close" id="modalClose" aria-label="Close Modal">&times;</button>
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  // DOM Elements
+  const drawerOverlay = document.getElementById('drawerOverlay');
+  const drawerPanel = document.getElementById('drawerPanel');
+  const drawerClose = document.getElementById('drawerClose');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalPanel = document.getElementById('modalPanel');
+  const modalClose = document.getElementById('modalClose');
+  const modalContent = document.getElementById('modalContent');
+
+  const toastContainer = document.getElementById('toastContainer');
+
+  // Helper: Show Toast
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-pill';
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+    
+    // Trigger slide-in transition
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 10);
+
+    // Fade-out transition
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      toast.classList.remove('show');
+      // Remove from DOM
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }, 2500);
+  }
+
+  // Helper: Open Modal
+  function openModal(type, data = {}) {
+    let html = '';
+    
+    if (type === 'login') {
+      html = `
+        <div class="auth-modal">
+          <h2 style="font-size:24px;font-weight:700;margin-bottom:8px;text-align:center;">Welcome Back</h2>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:24px;text-align:center;">Login to manage your saved properties and searches.</p>
+          <form id="loginForm" style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Email Address</label>
+              <input type="email" required placeholder="name@example.com" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;outline:none;font-size:14px;font-family:inherit;">
+            </div>
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Password</label>
+              <input type="password" required placeholder="••••••••" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;outline:none;font-size:14px;font-family:inherit;">
+            </div>
+            <button type="submit" class="btn-primary" style="border:none;cursor:pointer;padding:14px;width:100%;font-size:15px;margin-top:8px;border-radius:30px;">Log in</button>
+          </form>
+          <div style="margin-top:20px;text-align:center;font-size:13px;color:var(--muted);">
+            Don't have an account? <a href="#" id="modalSignupLink" style="color:var(--amber-dark);font-weight:600;">List Your Property</a>
+          </div>
+        </div>
+      `;
+    } else if (type === 'list-property') {
+      html = `
+        <div class="list-property-modal">
+          <h2 style="font-size:24px;font-weight:700;margin-bottom:8px;text-align:center;">List Your Property</h2>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:24px;text-align:center;">Reach millions of buyers and renters. It's free to list!</p>
+          <form id="listPropertyForm" style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Property Address</label>
+              <input type="text" required placeholder="123 Main St, San Francisco, CA" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;outline:none;font-size:14px;font-family:inherit;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div>
+                <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Property Type</label>
+                <select style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;outline:none;font-size:14px;font-family:inherit;background:#fff;">
+                  <option>House</option>
+                  <option>Apartment</option>
+                  <option>Villa</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Asking Price ($)</label>
+                <input type="number" required placeholder="500,000" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;outline:none;font-size:14px;font-family:inherit;">
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" style="border:none;cursor:pointer;padding:14px;width:100%;font-size:15px;margin-top:8px;border-radius:30px;">Submit listing</button>
+          </form>
+        </div>
+      `;
+    } else if (type === 'consultation') {
+      html = `
+        <div class="consultation-modal">
+          <h2 style="font-size:24px;font-weight:700;margin-bottom:8px;text-align:center;">Start Conversation</h2>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:24px;text-align:center;">We'll connect you with an expert advisor.</p>
+          <form id="consultationForm" style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Your Name</label>
+              <input type="text" id="consultName" required placeholder="John Doe" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;outline:none;font-size:14px;font-family:inherit;">
+            </div>
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Email Address</label>
+              <input type="email" id="consultEmail" required placeholder="name@example.com" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;outline:none;font-size:14px;font-family:inherit;">
+            </div>
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Message</label>
+              <textarea id="consultMsg" rows="3" placeholder="How can we help you?" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;outline:none;font-size:14px;font-family:inherit;resize:none;"></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="border:none;cursor:pointer;padding:14px;width:100%;font-size:15px;margin-top:8px;border-radius:30px;">Send message</button>
+          </form>
+        </div>
+      `;
+    } else if (type === 'calculator-estimate') {
+      html = `
+        <div class="calculator-estimate-modal" style="text-align:center;">
+          <h2 style="font-size:24px;font-weight:700;margin-bottom:8px;">Home Value Estimator</h2>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:24px;">Get a mock property value estimate instantly.</p>
+          <div id="estimatorContent">
+            <form id="estimatorForm" style="display:flex;flex-direction:column;gap:16px;text-align:left;">
+              <div>
+                <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Property Address</label>
+                <input type="text" required value="784 Mcallister St, San Francisco, CA" placeholder="Enter your property address" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;outline:none;font-size:14px;font-family:inherit;">
+              </div>
+              <button type="submit" class="btn-primary" style="border:none;cursor:pointer;padding:14px;width:100%;font-size:15px;margin-top:8px;border-radius:30px;">Get estimate</button>
+            </form>
+          </div>
+        </div>
+      `;
+    } else if (type === 'listing-detail') {
+      html = `
+        <div class="listing-detail-modal">
+          <div style="border-radius:16px;overflow:hidden;height:260px;background:#d9dde3;margin-bottom:20px;">
+            <img src="${data.imgUrl}" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+            <div>
+              <div style="font-size:26px;font-weight:800;color:var(--ink);">${data.priceText}</div>
+              <div style="font-size:15px;font-weight:600;color:var(--amber-dark);margin-top:4px;">${data.typeText}</div>
+            </div>
+            <span class="badge" style="position:static;background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:16px;font-size:11px;font-weight:700;">Available Now</span>
+          </div>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:6px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            ${data.addrText}
+          </p>
+          <div style="display:flex;gap:20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0;margin-bottom:20px;font-size:14px;color:var(--muted);">
+            <span style="display:inline-flex;align-items:center;gap:6px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 14h20M6 8v4"/>
+              </svg>
+              ${data.beds}
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:6px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 22h20M7 18v3M17 18v3M3 14h18c.6 0 1-.4 1-1V9c0-2.8-2.2-5-5-5h-6c-2.8 0-5 2.2-5 5v4c0 .6.4 1 1 1zM14 4V2"/>
+              </svg>
+              ${data.baths}
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:6px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 15v6h-6M3 9V3h6"/>
+              </svg>
+              ${data.sqft}
+            </span>
+          </div>
+          
+          <p style="font-size:14px;color:var(--ink);line-height:1.6;margin-bottom:24px;">
+            Spacious ${data.typeText.toLowerCase()} featuring an open floor plan, updated finishes, and a private backyard. Located minutes from schools, shopping, and transit.
+          </p>
+
+          <!-- Agent Block -->
+          <div style="display:flex;align-items:center;justify-content:space-between;background:var(--panel);padding:16px;border-radius:16px;margin-bottom:24px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:#0f1b2d;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">JR</div>
+              <div>
+                <div style="font-weight:700;font-size:14px;color:var(--ink);">Jordan Reyes</div>
+                <div style="font-size:12px;color:var(--muted);">Beehome Certified Agent</div>
+              </div>
+            </div>
+            <a href="tel:4155550199" style="width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--ink);border:1px solid var(--line);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </a>
+          </div>
+
+          <div style="display:flex;gap:12px;">
+            <button class="btn-primary tour-btn" style="border:none;cursor:pointer;padding:14px;flex:1;font-size:15px;display:flex;align-items:center;justify-content:center;font-weight:600;border-radius:30px;">
+              Schedule a tour
+            </button>
+            <button class="btn-secondary contact-agent-btn" style="border:1px solid var(--line);background:transparent;cursor:pointer;padding:14px;flex:1;font-size:15px;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--ink);border-radius:30px;">
+              Contact agent
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (type === 'nav-link') {
+      html = `
+        <div class="nav-link-modal">
+          <h2 style="font-size:24px;font-weight:700;margin-bottom:8px;text-align:center;">${data.title} Department</h2>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:24px;text-align:center;">Explore real estate listings and services with Beehome.</p>
+          <div style="background:var(--panel);border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;">
+            <div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;">Ready to learn more?</div>
+            <p style="font-size:13px;color:var(--muted);line-height:1.5;">Our ${data.title.toLowerCase()} department is fully automated to give you real-time estimates and connect you with top-rated agents.</p>
+          </div>
+          <button class="btn-primary inquiry-btn" style="border:none;cursor:pointer;padding:14px;width:100%;font-size:15px;">Contact Agent</button>
+        </div>
+      `;
+    }
+
+    modalContent.innerHTML = html;
+    modalOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // Hook Form Submissions Inside Modals
+    if (type === 'login') {
+      document.getElementById('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        closeModal();
+        showToast("Login is coming soon — this is a design preview.");
+      });
+      document.getElementById('modalSignupLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('list-property');
+      });
+    } else if (type === 'list-property') {
+      document.getElementById('listPropertyForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        closeModal();
+        showToast("Thanks! Our team will review your listing within 24 hours.");
+      });
+    } else if (type === 'consultation') {
+      document.getElementById('consultationForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('consultName').value.trim();
+        const email = document.getElementById('consultEmail').value.trim();
+        if (name && email) {
+          closeModal();
+          showToast("Thanks! We'll be in touch shortly.");
+        }
+      });
+    } else if (type === 'calculator-estimate') {
+      document.getElementById('estimatorForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const randVal = Math.floor(Math.random() * 500000) + 250000;
+        const formattedVal = '$' + randVal.toLocaleString();
+        
+        document.getElementById('estimatorContent').innerHTML = `
+          <div style="background:var(--panel);border-radius:16px;padding:24px;margin-top:10px;text-align:center;">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Estimated home value</div>
+            <div style="font-size:36px;font-weight:800;color:var(--ink);">${formattedVal}</div>
+            <p style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5;">This is a purely mock estimation based on market templates.</p>
+            <button class="btn-primary" id="estimateCloseBtn" style="border:none;cursor:pointer;padding:12px 24px;font-size:14px;margin-top:18px;border-radius:30px;width:100%;">Close</button>
+          </div>
+        `;
+        document.getElementById('estimateCloseBtn').addEventListener('click', () => {
+          closeModal();
+        });
+      });
+    }
+
+    // Bind inside elements button clicks
+    const tourBtn = modalContent.querySelector('.tour-btn');
+    if (tourBtn) {
+      tourBtn.addEventListener('click', () => {
+        closeModal();
+        showToast("Tour request sent — an agent will contact you shortly.");
+      });
+    }
+    const contactAgentBtn = modalContent.querySelector('.contact-agent-btn');
+    if (contactAgentBtn) {
+      contactAgentBtn.addEventListener('click', () => {
+        closeModal();
+        showToast("Message sent to Jordan Reyes.");
+      });
+    }
+    const inquiryBtn = modalContent.querySelector('.inquiry-btn');
+    if (inquiryBtn) {
+      inquiryBtn.addEventListener('click', () => {
+        closeModal();
+        showToast('Inquiry received! We will follow up shortly.');
+      });
+    }
+  }
+
+  // Helper: Close Modal
+  function closeModal() {
+    modalOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Bind Close Elements
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
+
+  // Drawer Actions
+  function openDrawer() {
+    drawerOverlay.classList.add('active');
+    drawerPanel.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    drawerOverlay.classList.remove('active');
+    drawerPanel.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  hamburgerBtn.addEventListener('click', openDrawer);
+  drawerClose.addEventListener('click', closeDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+
+  // Global Key Listener (Escape Key to close Drawer and Modal)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      closeDrawer();
+    }
+  });
+
+  // Event Listeners for Nav Links
+  document.querySelectorAll('.nav-link-item').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeDrawer();
+      const title = link.textContent.trim();
+      openModal('nav-link', { title });
+    });
+  });
+
+  // Event Listeners for Login Triggers
+  document.querySelectorAll('.login-trigger').forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeDrawer();
+      openModal('login');
+    });
+  });
+
+  // Event Listeners for List Property Triggers
+  document.querySelectorAll('.list-property-trigger').forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeDrawer();
+      openModal('list-property');
+    });
+  });
+
+  // Event Listeners for Consultation Triggers
+  document.querySelectorAll('.consultation-trigger').forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('consultation');
+    });
+  });
+
+  // Event Listeners for Calculator Triggers
+  document.querySelectorAll('.calculator-trigger').forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('calculator-estimate');
+    });
+  });
+
+  // Event Listeners for Favorite Heart Buttons (toggle & toast)
+  document.querySelectorAll('.heart').forEach(heart => {
+    const svg = heart.querySelector('svg');
+    if (svg && (svg.getAttribute('fill') === '#e0453c' || heart.parentNode.classList.contains('featured'))) {
+      heart.classList.add('favorited');
+    }
+
+    heart.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isFavorited = heart.classList.toggle('favorited');
+      
+      if (isFavorited) {
+        svg.setAttribute('fill', '#e0453c');
+        svg.setAttribute('stroke', '#e0453c');
+        showToast('Saved to favorites.');
+      } else {
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'var(--ink)');
+      }
+    });
+  });
+
+  // Event Listeners for Listing Cards Details
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.heart')) return;
+      
+      const imgUrl = card.querySelector('.card-img img').src;
+      const priceText = card.querySelector('.price').childNodes[0].textContent.trim();
+      const typeText = card.querySelector('.card-type').textContent.trim();
+      const addrText = card.querySelector('.card-addr').textContent.trim();
+      
+      const metaSpans = card.querySelectorAll('.card-meta span');
+      const beds = metaSpans[0] ? metaSpans[0].textContent.trim() : '';
+      const baths = metaSpans[1] ? metaSpans[1].textContent.trim() : '';
+      const sqft = metaSpans[2] ? metaSpans[2].textContent.trim() : '';
+      
+      openModal('listing-detail', {
+        imgUrl, priceText, typeText, addrText, beds, baths, sqft
+      });
+    });
+  });
+
+  // Searchbar "Find out" button click action
+  const searchButton = document.querySelector('.searchbar button');
+  const searchInput = document.querySelector('.searchbar input');
+  if (searchButton && searchInput) {
+    searchButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (query) {
+        showToast(`Searching for "${query}"...`);
+        searchInput.value = '';
+      } else {
+        showToast('Please enter a location to search.');
+      }
+    });
+  }
+
+  // Hero Tabs click handler
+  document.querySelectorAll('.tabs span').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const parent = tab.parentNode;
+      parent.querySelector('.active').classList.remove('active');
+      tab.classList.add('active');
+    });
+  });
+
+  // Popular listings filter tabs handler + initial filter logic
+  const popularSection = document.getElementById('popularListings');
+  if (popularSection) {
+    const popularTabs = popularSection.querySelectorAll('.filter-tabs span');
+    popularTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        popularSection.querySelector('.filter-tabs span.active').classList.remove('active');
+        tab.classList.add('active');
+        
+        const filterVal = tab.textContent.trim().toLowerCase();
+        popularSection.querySelectorAll('.grid-3 .card').forEach(card => {
+          if (card.getAttribute('data-type') === filterVal) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Run initial filter on page load
+    const activeTab = popularSection.querySelector('.filter-tabs span.active');
+    if (activeTab) {
+      const initialVal = activeTab.textContent.trim().toLowerCase();
+      popularSection.querySelectorAll('.grid-3 .card').forEach(card => {
+        if (card.getAttribute('data-type') === initialVal) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  }
+
+  // Listing category card shortcut triggers
+  document.querySelectorAll('.cat-card').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      const typeText = card.querySelector('h3').textContent.trim();
+      const popular = document.getElementById('popularListings');
+      if (popular) {
+        popular.scrollIntoView({ behavior: 'smooth' });
+        const tabs = popular.querySelectorAll('.filter-tabs span');
+        tabs.forEach(tab => {
+          if (tab.textContent.trim().toLowerCase() === typeText.toLowerCase()) {
+            tab.click();
+          }
+        });
+      }
+    });
+  });
+
+  // View All listings smooth-scroll triggers
+  document.querySelectorAll('.view-all').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const section = link.closest('section');
+      if (section) {
+        const grid = section.querySelector('.grid-3, .cat-grid');
+        if (grid) {
+          grid.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+      showToast("Showing all listings — full results page coming soon.");
+    });
+  });
+
+  // Trustpilot Arrow review cycle
+  const trustReviews = [
+    { quote: '"Beehome is just amazing, selling a house has never been easier like beehome."', author: 'Arthur J.' },
+    { quote: '"Excellent service, made buying our first home a stress-free experience!"', author: 'David, Texas' },
+    { quote: '"Very intuitive platform with accurate estimates and great local agents."', author: 'Sarah, New York' }
+  ];
+  let currentTrustIdx = 0;
+  const trustQuoteContainer = document.querySelector('.trust-quote');
+  const trustArrow = document.querySelector('.trust-arrow');
+
+  if (trustQuoteContainer && trustArrow) {
+    trustArrow.style.cursor = 'pointer';
+    trustArrow.addEventListener('click', () => {
+      currentTrustIdx = (currentTrustIdx + 1) % trustReviews.length;
+      trustQuoteContainer.style.transition = 'opacity 0.2s ease';
+      trustQuoteContainer.style.opacity = 0;
+      
+      setTimeout(() => {
+        const item = trustReviews[currentTrustIdx];
+        trustQuoteContainer.innerHTML = `${item.quote}<span>${item.author}</span>`;
+        trustQuoteContainer.style.opacity = 1;
+      }, 200);
+    });
+  }
+
+  // Testimonials prev/next arrows cycle
+  const testimonials = [
+    {
+      quote: "The site is good, helpful in providing information to find a house, especially for me who likes to search for information via cellphone, good luck for Beehome and continue to help for housing seekers like me.",
+      name: "Pamela S.",
+      loc: "Lake Forest, CA"
+    },
+    {
+      quote: "We found our dream home within two weeks! The interface is clean, listing details are exceptionally detailed, and the agent was super responsive.",
+      name: "Marcus V.",
+      loc: "Austin, TX"
+    },
+    {
+      quote: "Listing my apartment was incredibly simple. The traffic was immediate, and I was able to find a qualified renter in less than a week.",
+      name: "Elena R.",
+      loc: "Chicago, IL"
+    }
+  ];
+  let currentTestimonialIdx = 0;
+  
+  const testimonialContainer = document.querySelector('.testimonial');
+  if (testimonialContainer) {
+    const quoteEl = testimonialContainer.querySelector('.quote');
+    const nameEl = testimonialContainer.querySelector('.name');
+    const locEl = testimonialContainer.querySelector('.loc');
+    const prevBtn = testimonialContainer.querySelector('.dots button:first-child');
+    const nextBtn = testimonialContainer.querySelector('.dots button:last-child');
+    
+    function updateTestimonial(idx) {
+      quoteEl.style.transition = 'opacity 0.2s ease';
+      nameEl.style.transition = 'opacity 0.2s ease';
+      locEl.style.transition = 'opacity 0.2s ease';
+      
+      quoteEl.style.opacity = 0;
+      nameEl.style.opacity = 0;
+      locEl.style.opacity = 0;
+      
+      setTimeout(() => {
+        const item = testimonials[idx];
+        quoteEl.textContent = item.quote;
+        nameEl.textContent = item.name;
+        locEl.textContent = item.loc;
+        
+        quoteEl.style.opacity = 1;
+        nameEl.style.opacity = 1;
+        locEl.style.opacity = 1;
+      }, 200);
+    }
+    
+    prevBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      currentTestimonialIdx = (currentTestimonialIdx - 1 + testimonials.length) % testimonials.length;
+      updateTestimonial(currentTestimonialIdx);
+    });
+    
+    nextBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      currentTestimonialIdx = (currentTestimonialIdx + 1) % testimonials.length;
+      updateTestimonial(currentTestimonialIdx);
+    });
+  }
+
+  // Footer Links Coming Soon Handler
+  document.querySelectorAll('.footer-col a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const text = link.textContent.trim();
+      if (text === 'Contact us') {
+        const contactsSection = document.getElementById('footerContacts');
+        if (contactsSection) {
+          contactsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else {
+        showToast(`${text} — coming soon.`);
+      }
+    });
+  });
+
+  // Footer Social links click handler
+  document.querySelectorAll('.socials span').forEach(span => {
+    span.style.cursor = 'pointer';
+    span.addEventListener('click', (e) => {
+      e.preventDefault();
+      const platform = span.getAttribute('aria-label') || 'Social media';
+      showToast(`Beehome isn't live on ${platform} yet — check back soon!`);
+    });
+  });
+</script>
+
+</body>
+</html>
