@@ -78,11 +78,14 @@ header{
 
 /* ============ HERO ============ */
 .hero {
-  min-height: calc(100dvh - 56px);
+  padding-top: 20px;
+}
+.hero-wrap {
+  width: 100%;
+  padding-inline: var(--pad);
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
-  overflow: visible;
-  padding-top: 20px;
 }
 .hero h1 {
   font-size: clamp(36px, 9.5vw, 156px);
@@ -90,20 +93,15 @@ header{
   letter-spacing: -.045em;
   line-height: .92;
   text-transform: uppercase;
-  padding-inline: var(--pad);
+  padding-inline: 0;
   flex-shrink: 0;
   white-space: nowrap;
   overflow: hidden;
   width: 100%;
 }
-.hero .wrap {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
 .hero-media {
   margin-top: 16px;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
   background: var(--panel);
   width: 100%;
@@ -406,23 +404,20 @@ footer .wrap {
 
 <!-- ================= HERO ================= -->
 <section class="hero">
-  <h1 data-reveal>Saad Ahmad</h1>
-  <div class="wrap">
+  <div class="hero-wrap">
+    <h1 data-reveal>Saad Ahmad</h1>
     <div class="hero-media" data-reveal>
       <!-- Replace src with your hero image -->
       <img alt="Saad Ahmad — portfolio hero" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2000 900'%3E%3Cdefs%3E%3CradialGradient id='r' cx='0.5' cy='0.35' r='0.9'%3E%3Cstop offset='0' stop-color='%23232327'/%3E%3Cstop offset='1' stop-color='%230b0b0d'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='2000' height='900' fill='url(%23r)'/%3E%3Ccircle cx='1000' cy='450' r='180' fill='none' stroke='%232c2c30'/%3E%3Cpath d='M1000 428v44M978 450h44' stroke='%233a3a3f' stroke-width='2'/%3E%3Ctext x='64' y='846' font-family='Arial,Helvetica,sans-serif' font-size='24' letter-spacing='8' fill='%2355555a'%3ESAAD AHMAD / PORTFOLIO 2026%3C/text%3E%3C/svg%3E">
     </div>
+    <div class="hero-meta" data-reveal>
+      <div class="col"><b>Creative UI Designer</b>Interface · Product · Systems</div>
+      <div class="col"><b>Portfolio</b>2026 Edition</div>
+      <div class="col"><b>© 2026</b>All rights reserved</div>
+      <div class="col"><b>Focus</b>Minimal, structured interfaces designed with intent.</div>
+    </div>
   </div>
 </section>
-
-<div class="wrap">
-  <div class="hero-meta" data-reveal>
-    <div class="col"><b>Creative UI Designer</b>Interface · Product · Systems</div>
-    <div class="col"><b>Portfolio</b>2026 Edition</div>
-    <div class="col"><b>© 2026</b>All rights reserved</div>
-    <div class="col"><b>Focus</b>Minimal, structured interfaces designed with intent.</div>
-  </div>
-</div>
 
 <!-- ================= ABOUT ================= -->
 <section id="about">
